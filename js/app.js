@@ -154,14 +154,14 @@ document.addEventListener('DOMContentLoaded', () => {
       lastGeneratedImageUrl = result.image_url;
 
       previewPanel.innerHTML = `
-        <img src="${lastGeneratedImageUrl}" style="width:100%;border-radius:16px" />
+  <img src="${lastGeneratedImageUrl}" />
 
-        <div class="result-actions">
-          <button id="downloadImage">Download</button>
-          <button id="regenerateImage">Regenerate</button>
-          <button id="createVideo">Create Video</button>
-        </div>
-      `;
+  <div class="result-actions">
+    <button id="downloadImage" class="secondary-action">Download</button>
+    <button id="regenerateImage" class="secondary-action">Regenerate</button>
+    <button id="createVideo" class="primary-action">Create Video</button>
+  </div>
+`;
 
       activateResultButtons();
 

@@ -1,52 +1,41 @@
-export async function handler(event) {
+exports.handler = async function (event) {
+  console.log('✅ generate-video mock function invoked');
+
   try {
-    const { sourceImage, motionPrompt } = JSON.parse(event.body);
+    const body = JSON.parse(event.body || '{}');
+    const imageUrl = body.image_url;
+    const motionPrompt = body.motion_prompt;
 
     const apiKey = event.headers['x-higgsfield-key'];
     const apiSecret = event.headers['x-higgsfield-secret'];
 
     if (!apiKey || !apiSecret) {
       return {
-        statusCode: 401,
+        statusCode: 400,
         body: 'Missing Higgsfield API keys',
       };
     }
 
-    const response = await fetch('https://platform.higgsfield.ai/api/v1/video', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Key ${apiKey}:${apiSecret}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/veo-3.1-i2v',
-        image: sourceImage,
-        prompt: motionPrompt,
-        duration: 8,
-        resolution: '1080p',
-        aspect_ratio: '16:9',
-        audio: true,
-      }),
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      return { statusCode: 500, body: errText };
+    if (!imageUrl || !motionPrompt) {
+      return {
+        statusCode: 400,
+        body: 'Missing image or motion prompt',
+      };
     }
 
-    const data = await response.json();
-
+    // ✅ MOCK VIDEO RESPONSE
     return {
       statusCode: 200,
       body: JSON.stringify({
-        video_url: data.video_url,
+        video_url: 'https://www.w3schools.com/html/mov_bbb.mp4'
       }),
     };
+
   } catch (err) {
+    console.error('❌ generate-video mock error:', err);
     return {
       statusCode: 500,
-      body: err.message,
+      body: 'Internal Server Error',
     };
   }
-}
-``
+};

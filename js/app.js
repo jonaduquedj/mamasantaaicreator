@@ -64,18 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* =====================================================
-     PROMPT CHIPS
-  ===================================================== */
-  const promptTextarea = document.querySelector('#image textarea');
-
-  document.querySelectorAll('.prompt-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      promptTextarea.value = chip.textContent.trim();
-      promptTextarea.focus();
-    });
-  });
-
-  /* =====================================================
      IMAGE PREVIEW (UPLOAD)
   ===================================================== */
   const previewUploadBox = document.querySelector('#image .upload-box');
@@ -106,8 +94,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* =====================================================
+     SHARED SUGGESTED PROMPTS (IMAGE + VIDEO)
+  ===================================================== */
+  function wirePromptChips(containerSelector, textareaSelector) {
+    const container = document.querySelector(containerSelector);
+    const textarea = document.querySelector(textareaSelector);
+
+    if (!container || !textarea) return;
+
+    container.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('prompt-chip')) return;
+
+      textarea.value = e.target.textContent.trim();
+      textarea.focus();
+    });
+  }
+
+  // Image prompts
+  wirePromptChips('#image .prompt-list', '#image textarea');
+
+  // Video prompts
+  wirePromptChips('#video .prompt-list', '#video textarea');
+
+  /* =====================================================
      GENERATE IMAGE (MOCK)
   ===================================================== */
+  const promptTextarea = document.querySelector('#image textarea');
   const generateImageBtn = document.querySelector('#image .primary-action');
   const previewPanel = document.querySelector('#image .preview-panel');
 
@@ -144,7 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const result = await response.json();
-
       lastGeneratedImageUrl = result.image_url;
 
       previewPanel.innerHTML = `
@@ -201,7 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const videoPreviewPanel = document.querySelector('#video .preview-panel');
 
   generateVideoBtn.addEventListener('click', async () => {
-
     try {
       const motionPrompt = videoPromptTextarea.value.trim();
 

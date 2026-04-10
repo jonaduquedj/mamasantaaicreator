@@ -557,3 +557,34 @@ nav.tabs .tab:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.45);
 }
+
+/* =========================
+   HIGGSFIELD CONNECTED STATE
+========================= */
+
+#openSettings.connected {
+  background: linear-gradient(135deg, #3ddc97, #1fa971);
+  color: #0b2e1f;
+  font-weight: 600;
+  border-radius: 999px;
+  cursor: default;
+}
+
+/* Evita hover cuando está conectado */
+#openSettings.connected:hover {
+  transform: none;
+  box-shadow: none;
+}
+/* =========================
+   HIGGSFIELD CONNECTED STATE
+   (SAME BUTTON, CONNECTED)
+========================= */
+
+#openSettings.connected-state {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: #0b2e1f;
+}
+
+#openSettings.connected-state:hover {
+  background: linear-gradient(135deg, #5eea9b, #22c55e);
+}

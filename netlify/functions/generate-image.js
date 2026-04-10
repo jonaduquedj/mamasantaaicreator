@@ -1,17 +1,15 @@
 exports.handler = async function (event) {
-  console.log('✅ generate-image function invoked');
+  console.log('✅ generate-image mock function invoked');
 
   try {
-    // Parse request body
     const body = JSON.parse(event.body || '{}');
     const prompt = body.prompt;
     const imageBase64 = body.imageBase64;
 
-    // Read API keys from headers
     const apiKey = event.headers['x-higgsfield-key'];
     const apiSecret = event.headers['x-higgsfield-secret'];
 
-    // Validate inputs
+    // Validaciones básicas
     if (!apiKey || !apiSecret) {
       return {
         statusCode: 400,
@@ -26,43 +24,16 @@ exports.handler = async function (event) {
       };
     }
 
-    // Call Higgsfield API
-    const response = await fetch('https://platform.higgsfield.ai/api/v1/image', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Key ${apiKey}:${apiSecret}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'nano-banana-pro',
-        prompt,
-        reference_image: imageBase64,
-        aspect_ratio: '1:1',
-        resolution: '1080p',
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Higgsfield error:', errorText);
-      return {
-        statusCode: 500,
-        body: errorText,
-      };
-    }
-
-    const data = await response.json();
-
-    // Success
+    // ✅ MOCK RESPONSE (imagen simulada)
     return {
       statusCode: 200,
       body: JSON.stringify({
-        image_url: data.image_url,
+        image_url: 'https://via.placeholder.com/600x600?text=AI+Image',
       }),
     };
 
   } catch (err) {
-    console.error('❌ Function crash:', err);
+    console.error('❌ Mock function error:', err);
     return {
       statusCode: 500,
       body: 'Internal Server Error',

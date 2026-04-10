@@ -112,8 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const previewPanel = document.querySelector('#image .preview-panel');
 
   generateImageBtn.addEventListener('click', async () => {
-    console.log('🔥 Generate Image button clicked');
-
     try {
       const file = imageInput.files[0];
       const prompt = promptTextarea.value.trim();
@@ -145,23 +143,19 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ prompt, imageBase64 })
       });
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
       const result = await response.json();
 
       lastGeneratedImageUrl = result.image_url;
 
       previewPanel.innerHTML = `
-  <img src="${lastGeneratedImageUrl}" />
+        <img src="${lastGeneratedImageUrl}" />
 
-  <div class="result-actions">
-    <button id="downloadImage" class="secondary-action">Download</button>
-    <button id="regenerateImage" class="secondary-action">Regenerate</button>
-    <button id="createVideo" class="primary-action">Create Video</button>
-  </div>
-`;
+        <div class="result-actions">
+          <button id="downloadImage" class="secondary-action">Download</button>
+          <button id="regenerateImage" class="secondary-action">Regenerate</button>
+          <button id="createVideo" class="primary-action">Create Video</button>
+        </div>
+      `;
 
       activateResultButtons();
 
@@ -175,11 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
      RESULT BUTTONS
   ===================================================== */
   function activateResultButtons() {
-    const downloadBtn = document.getElementById('downloadImage');
-    const regenerateBtn = document.getElementById('regenerateImage');
-    const createVideoBtn = document.getElementById('createVideo');
 
-    downloadBtn.onclick = () => {
+    document.getElementById('downloadImage').onclick = () => {
       const a = document.createElement('a');
       a.href = lastGeneratedImageUrl;
       a.download = 'generated-image.png';
@@ -188,20 +179,72 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.removeChild(a);
     };
 
-    regenerateBtn.onclick = () => {
+    document.getElementById('regenerateImage').onclick = () => {
       generateImageBtn.click();
     };
 
-    createVideoBtn.onclick = () => {
+    document.getElementById('createVideo').onclick = () => {
       document.querySelector('[data-tab="video"]').click();
 
       const videoPreview = document.querySelector('#video .upload-preview');
       videoPreview.innerHTML = `<img src="${lastGeneratedImageUrl}" />`;
       videoPreview.style.display = 'block';
       videoPreview.parentElement.classList.add('has-image');
-
-      console.log('🎬 Image passed to Video Generation');
     };
   }
+
+  /* =====================================================
+     GENERATE VIDEO (MOCK)
+  ===================================================== */
+  const generateVideoBtn = document.querySelector('#video .primary-action');
+  const videoPromptTextarea = document.querySelector('#video textarea');
+  const videoPreviewPanel = document.querySelector('#video .preview-panel');
+
+  generateVideoBtn.addEventListener('click', async () => {
+
+    try {
+      const motionPrompt = videoPromptTextarea.value.trim();
+
+      if (!lastGeneratedImageUrl) {
+        alert('No image available to create video.');
+        return;
+      }
+
+      if (!motionPrompt) {
+        alert('Please enter a motion prompt.');
+        return;
+      }
+
+      const apiKey = localStorage.getItem('higgsfield_api_key');
+      const apiSecret = localStorage.getItem('higgsfield_api_secret');
+
+      videoPreviewPanel.textContent = 'Generating video...';
+
+      const response = await fetch('/.netlify/functions/generate-video', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-higgsfield-key': apiKey,
+          'x-higgsfield-secret': apiSecret
+        },
+        body: JSON.stringify({
+          image_url: lastGeneratedImageUrl,
+          motion_prompt: motionPrompt
+        })
+      });
+
+      const result = await response.json();
+
+      videoPreviewPanel.innerHTML = `
+        <video controls autoplay loop muted>
+          <source src="${result.video_url}" type="video/mp4" />
+        </video>
+      `;
+
+    } catch (err) {
+      console.error(err);
+      videoPreviewPanel.textContent = 'Video generation failed';
+    }
+  });
 
 });

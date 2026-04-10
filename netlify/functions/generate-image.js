@@ -1,19 +1,15 @@
 export async function handler(event) {
+console.log('✅ generate-image function invoked');
   try {
     const { imageBase64, prompt } = JSON.parse(event.body);
 
-    // 🔐 API Keys ingresadas por el usuario (desde frontend)
-    const apiKey = event.headers['x-higgsfield-key'];
-    const apiSecret = event.headers['x-higgsfield-secret'];
-
-    if (!apiKey || !apiSecret) {
+    const apiKey = event.headers['x (!apiKey || !apiSecret) {    const apiKey = event.headers['x-higgsfield-key'];
       return {
         statusCode: 401,
         body: 'Missing Higgsfield API keys',
       };
     }
 
-    // ⚠️ Llamada REAL a Higgsfield (backend context)
     const response = await fetch('https://platform.higgsfield.ai/api/v1/image', {
       method: 'POST',
       headers: {
@@ -25,13 +21,13 @@ export async function handler(event) {
         prompt,
         reference_image: imageBase64,
         aspect_ratio: '1:1',
-        resolution: '1080p'
+        resolution: '1080p',
       }),
     });
 
     if (!response.ok) {
-      const errText = await response.text();
-      return { statusCode: 500, body: errText };
+      const err = await response.text();
+      return { statusCode: 500, body: err };
     }
 
     const data = await response.json();
@@ -49,3 +45,5 @@ export async function handler(event) {
     };
   }
 }
+    const apiSecret = event.headers['x-higgsfield-secret'];
+

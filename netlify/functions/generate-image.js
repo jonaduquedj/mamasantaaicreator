@@ -1,14 +1,19 @@
-export async function handler(event) {
-console.log('✅ generate-image function invoked');
-  try {
-    const { imageBase64, prompt } = JSON.parse(event.body);
 
-    const apiKey = event.headers['x (!apiKey || !apiSecret) {    const apiKey = event.headers['x-higgsfield-key'];
+exports.handler = async function (event) {
+  console.log('✅ generate-image function invoked');
+
+  try {
+    const { prompt, imageBase64 } = JSON.parse(event.body);
+
+    const apiKey = event.headers['x-higgsfield-key'];
+    const apiSecret = event.headers['x-higgsfield-secret'];
+
+    if (!apiKey || !apiSecret) {
       return {
-        statusCode: 401,
-        body: 'Missing Higgsfield API keys',
+        statusCode: 400,
+        body: 'Missing Higgsfield API keys'
       };
-    }
+
 
     const response = await fetch('https://platform.higgsfield.ai/api/v1/image', {
       method: 'POST',
@@ -44,6 +49,5 @@ console.log('✅ generate-image function invoked');
       body: err.message,
     };
   }
-}
     const apiSecret = event.headers['x-higgsfield-secret'];
 

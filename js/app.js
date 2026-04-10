@@ -180,6 +180,7 @@ const generateImageBtn = document.querySelector('#image .primary-action');
 const previewPanel = document.querySelector('#image .preview-panel');
 
 generateImageBtn.addEventListener('click', async () => {
+  console.log('🔥 Generate Image button clicked');
   try {
     const file = imageInput.files[0];
     const prompt = promptTextarea.value.trim();

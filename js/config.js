@@ -1,8 +1,8 @@
 // Configuration and constants (FRONTEND)
 
 export const API_ENDPOINTS = {
-  IMAGE: '/.netlify/functions/generate-image',
-  VIDEO: '/.netlify/functions/generate-video'
+  IMAGE: '/netlify/functions/generate-image',
+  VIDEO: '/netlify/functions/generate-video'
 };
 
 export const MODELS = {

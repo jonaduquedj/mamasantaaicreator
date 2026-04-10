@@ -4,6 +4,11 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   /* =====================================================
+     GLOBAL STATE
+  ===================================================== */
+  let lastGeneratedImageUrl = null;
+
+  /* =====================================================
      TABS
   ===================================================== */
   document.querySelectorAll('.tab').forEach(tab => {
@@ -53,11 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
       option.classList.add('active');
 
       const isBatch = option.textContent.includes('Batch');
-      if (isBatch) {
-        imageInput.setAttribute('multiple', 'multiple');
-      } else {
-        imageInput.removeAttribute('multiple');
-      }
+      if (isBatch) imageInput.setAttribute('multiple', 'multiple');
+      else imageInput.removeAttribute('multiple');
     });
   });
 
@@ -74,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* =====================================================
-     IMAGE PREVIEW (SAFE)
+     IMAGE PREVIEW (UPLOAD)
   ===================================================== */
   const previewUploadBox = document.querySelector('#image .upload-box');
   const previewContainer = previewUploadBox.querySelector('.upload-preview');
@@ -104,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* =====================================================
-     GENERATE IMAGE (SAFE + ISOLATED)
+     GENERATE IMAGE (MOCK)
   ===================================================== */
   const generateImageBtn = document.querySelector('#image .primary-action');
   const previewPanel = document.querySelector('#image .preview-panel');
@@ -144,17 +146,24 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (!response.ok) {
-        const err = await response.text();
-        throw new Error(err);
+        throw new Error(await response.text());
       }
 
       const result = await response.json();
 
+      lastGeneratedImageUrl = result.image_url;
+
       previewPanel.innerHTML = `
-        <img src="${result.image_url}" style="width:100%; border-radius:16px;" />
+        <img src="${lastGeneratedImageUrl}" style="width:100%;border-radius:16px" />
+
+        <div class="result-actions">
+          <button id="downloadImage">Download</button>
+          <button id="regenerateImage">Regenerate</button>
+          <button id="createVideo">Create Video</button>
+        </div>
       `;
 
-      console.log('✅ Image generated successfully');
+      activateResultButtons();
 
     } catch (err) {
       console.error(err);
@@ -163,24 +172,36 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* =====================================================
-     VIDEO PREVIEW (SAFE)
+     RESULT BUTTONS
   ===================================================== */
-  const videoInput = document.getElementById('videoRef');
-  const videoUploadBox = document.querySelector('#video .upload-box');
-  const videoPreview = videoUploadBox.querySelector('.upload-preview');
+  function activateResultButtons() {
+    const downloadBtn = document.getElementById('downloadImage');
+    const regenerateBtn = document.getElementById('regenerateImage');
+    const createVideoBtn = document.getElementById('createVideo');
 
-  videoInput.addEventListener('change', () => {
-    const file = videoInput.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      videoPreview.innerHTML = `<img src="${reader.result}" />`;
-      videoPreview.style.display = 'block';
-      videoUploadBox.classList.add('has-image');
+    downloadBtn.onclick = () => {
+      const a = document.createElement('a');
+      a.href = lastGeneratedImageUrl;
+      a.download = 'generated-image.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     };
-    reader.readAsDataURL(file);
-  });
+
+    regenerateBtn.onclick = () => {
+      generateImageBtn.click();
+    };
+
+    createVideoBtn.onclick = () => {
+      document.querySelector('[data-tab="video"]').click();
+
+      const videoPreview = document.querySelector('#video .upload-preview');
+      videoPreview.innerHTML = `<img src="${lastGeneratedImageUrl}" />`;
+      videoPreview.style.display = 'block';
+      videoPreview.parentElement.classList.add('has-image');
+
+      console.log('🎬 Image passed to Video Generation');
+    };
+  }
 
 });
-``

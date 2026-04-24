@@ -4,252 +4,116 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MAMA SANTA AI Creator by Jay D</title>
+
   <link rel="stylesheet" href="css/styles.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
+
 <body>
-<header class="header">
+
+<header>
   <div class="brand">
     <img src="assets/images/logo-mama-santa.jpeg" alt="MAMA SANTA Logo" />
-    <span> AI Generator by Jay D </span>
-  </div>
-  <div class="header-actions">
-    <button id="openSettings">Add Higgsfield API Key</button>
+    <span>AI Generator by Jay D</span>
   </div>
 </header>
 
-<main class="app">
-<nav class="tabs">
- <button class="tab active" data-tab="image">
-  <span class="tab-icon">🖼</span>
-  <span class="tab-text">Image Generation</span>
-</button>
+<main>
 
-  <button class="tab" data-tab="video">
-    <span class="tab-icon">🎥</span>
-    <span class="tab-text">Video Generation</span>
-  </button>
-</nav>
+  <!-- ✅ TABS (NECESARIOS PARA TU CSS) -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="image">
+      <span class="tab-icon">🖼</span>
+      <span class="tab-text">Image</span>
+    </button>
 
+    <button class="tab" data-tab="video">
+      <span class="tab-icon">🎥</span>
+      <span class="tab-text">Video</span>
+    </button>
+  </nav>
+
+  <!-- ✅ IMAGE TAB -->
   <section id="image" class="tab-content active">
-  <div class="layout">
+    <div class="layout">
 
-    <!-- LEFT PANEL -->
-    <aside class="controls-panel">
-      <h3>Image Configuration</h3>
-<div class="mode-toggle">
-  <span class="mode-label">Generation Mode</span>
+      <aside class="controls-panel">
+        <h3>Image Configuration</h3>
 
-  <div class="toggle-group">
-    <button class="toggle-option active" type="button">
-      Single Image
-    </button>
+        <label>Reference Image</label>
+        <div class="upload-box">
+          <input type="file" id="referenceImage" accept="image/png,image/jpeg" hidden />
+          <label for="referenceImage" class="upload-label">
+            <span class="upload-icon">⬆</span>
+            <strong>Upload Reference Image</strong>
+            <p>PNG or JPG · Max 10MB</p>
+          </label>
 
-    <button class="toggle-option" type="button">
-      Batch (Multiple)
-    </button>
-  </div>
-</div>
-      <label>Reference Image</label>
-     <div class="upload-box">
-  <input type="file" id="referenceImage" hidden />
-  <label for="referenceImage" class="upload-label">
-    <span class="upload-icon">⬆</span>
-    <strong>Upload Reference Image</strong>
-    <p>PNG or JPG · Max 10MB</p>
-  </label>
-  <!-- ✅ NUEVA CAPA PARA MINIATURA -->
-  <div class="upload-preview"></div>
-</div>
+          <!-- ✅ PREVIEW -->
+          <div class="upload-preview">
+            <img class="preview-image" alt="Preview" />
+          </div>
+        </div>
 
+        <label>Image Prompt</label>
+        <textarea
+          id="imagePrompt"
+          placeholder="Describe the image you want to generate..."
+        ></textarea>
 
+        <div class="suggested-prompts">
+          <span class="suggested-title">Suggested Prompts</span>
+          <div class="prompt-list">
+            <button type="button" class="prompt-chip">Professional studio fashion shot, clean background</button>
+            <button type="button" class="prompt-chip">Instagram lifestyle content, natural lighting</button>
+            <button type="button" class="prompt-chip">Luxury fashion portrait, editorial style</button>
+            <button type="button" class="prompt-chip">Cinematic lighting, premium brand aesthetic</button>
+          </div>
+        </div>
 
+        <button id="generateBtn" class="primary-action">Generate Image</button>
+      </aside>
 
-      <label>Aspect Ratio</label>
-      <select>
-        <option selected>16:9</option>
-        <option>9:16</option>
-        <option>1:1</option>
-      </select>
+      <div class="preview-panel">
+        <div class="preview-placeholder">Generated image will appear here</div>
+        <img id="outputImage" style="display:none; max-width:100%; border-radius:12px;" />
+      </div>
 
-      <label>Resolution</label>
-      <select>
-        <option>720p</option>
-        <option selected>1080p</option>
-        <option>2K</option>
-      </select>
+    </div>
+  </section>
 
-      <label>Image Prompt</label>
-      <textarea placeholder="Describe the image you want to generate..."></textarea>
-
-      <div class="suggested-prompts">
-  <span class="suggested-title">Suggested Prompts</span>
-
-  <div class="prompt-list">
-    <button type="button" class="prompt-chip">
-      Professional studio fashion shot, clean background
-    </button>
-
-    <button type="button" class="prompt-chip">
-      Instagram lifestyle content, natural lighting
-    </button>
-
-    <button type="button" class="prompt-chip">
-      Luxury fashion portrait, editorial style
-    </button>
-
-    <button type="button" class="prompt-chip">
-      Cinematic lighting, premium brand aesthetic
-    </button>
-  </div>
-</div>
-<button class="suggestion-button" type="button">
-  Generate Suggestions ✨
-</button>
-      <button class="primary-action">Generate Image</button>
-    </aside>
-
-    <!-- RIGHT PREVIEW -->
+  <!-- ✅ VIDEO TAB (PLACEHOLDER, NO ROMPE CSS) -->
+  <section id="video" class="tab-content">
     <div class="preview-panel">
       <div class="preview-placeholder">
-        Generated image will appear here
+        Video generation coming soon ✨
       </div>
     </div>
-
-  </div>
-</section>
-
-<section id="video" class="tab-content">
-  <div class="layout">
-
-    <aside class="controls-panel">
-      <h3>Video Configuration</h3>
-      <div class="mode-toggle">
-  <span class="mode-label">Generation Mode</span>
-
-  <div class="toggle-group">
-    <button class="toggle-option active" type="button">
-      Single Image
-    </button>
-
-    <button class="toggle-option" type="button">
-      Batch (Multiple)
-    </button>
-  </div>
-</div>
-<label>Reference Image (optional) </label>
-      <div class="upload-box">
-        <input type="file" id="videoRef" hidden />
-        <label for="videoRef" class="upload-label">
-          <span class="upload-icon">⬆</span>
-          <strong>Upload Source Image</strong>
-          <p>PNG / JPG · Max 10MB</p>
-        </label>
-        
-  <!-- ✅ Preview seguro para Video -->
-  <div class="upload-preview"></div>
-
-      </div>
-
-      <label>Duration</label>
-      <select>
-        <option>4s</option>
-        <option>6s</option>
-        <option selected>8s</option>
-      </select>
-
-      <label>Resolution</label>
-      <select>
-        <option>720p</option>
-        <option selected>1080p</option>
-      </select>
-
-      <label>Aspect Ratio</label>
-      <select>
-        <option>16:9</option>
-        <option>9:16</option>
-      </select>
-
-      <div class="setting-row">
-  <label class="setting-checkbox">
-    <input type="checkbox" checked />
-    <span>Generate audio </span>
-  </label>
-</div>
-
-      <label>Motion Prompt</label>
-      <textarea placeholder="Describe motion and camera movement..."></textarea>
-<div class="suggested-prompts">
-  <span class="suggested-title">Suggested Prompts</span>
-
-  <div class="prompt-list">
-    <button type="button" class="prompt-chip">
-      Cinematic camera movement, slow pan
-    </button>
-
-    <button type="button" class="prompt-chip">
-      Product reveal, dramatic lighting
-    </button>
-
-    <button type="button" class="prompt-chip">
-      Lifestyle walk-through, handheld feel
-    </button>
-
-    <button type="button" class="prompt-chip">
-      Cinematic lighting, premium brand aesthetic
-    </button>
-  </div>
-</div>
-<button class="suggestion-button" type="button">
-  Generate Suggestions ✨
-</button>
-      <button class="primary-action">
-        Generate Video (2‑Step Process)
-      </button>
-    </aside>
-
-    <div class="preview-panel">
-      <div class="preview-placeholder">
-        Generated video will appear here
-      </div>
-    </div>
-
-  </div>
-</section>
-``
+  </section>
 
 </main>
-<footer class="footer-main">
-  © 2026 Jay D IA®. All rights reserved.
+
+<footer>
+  © 2026 Jay D IA®. Powered by Google Gemini
 </footer>
 
-<footer class="footer-secondary">
-  Powered by Higgsfield API · Built with Nano Banana Pro & Veo 3.1
-</footer>
+<script src="js/app.js" type="module"></script>
 
-<div id="settingsModal" class="modal hidden">
-  <div class="modal-content">
-    <h3>Higgsfield API Keys</h3>
+<!-- ✅ TAB SWITCH LOGIC -->
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'))
 
-    <input
-      type="password"
-      id="apiKey"
-      placeholder="API Key"
-    />
+      tab.classList.add('active')
+      document.getElementById(tab.dataset.tab).classList.add('active')
+    })
+  })
+</script>
 
-    <input
-      type="password"
-      id="apiSecret"
-      placeholder="API Secret"
-    />
-
-    <button id="saveApiKeys">Save</button>
-    <button id="closeSettings">Close</button>
-  </div>
-</div>
-
-<script src="js/app.js"></script>
 </body>
 </html>

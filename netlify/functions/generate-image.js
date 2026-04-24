@@ -46,3 +46,25 @@ export async function handler(event) {
       data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)
 
     if (!imagePart) {
+      console.error('Gemini response:', data)
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Gemini did not return an image' })
+      }
+    }
+
+    const imageUrl = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ image_url: imageUrl })
+    }
+
+  } catch (err) {
+    console.error('Generate image error:', err)
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal server error' })
+    }
+  }
+}

@@ -1,65 +1,71 @@
-exports.handler = async function (event) {
+export async function handler(event) {
   try {
-    const { prompt, imageBase64 } = JSON.parse(event.body || '{}');
+    const { prompt, imageBase64 } = JSON.parse(event.body || '{}')
 
     if (!prompt || !imageBase64) {
       return {
         statusCode: 400,
-        body: 'Missing prompt or reference image'
-      };
+        body: JSON.stringify({ error: 'Missing prompt or image' })
+      }
     }
 
-    const apiKey = process.env.GOOGLE_AI_API_KEY;
+    const apiKey = process.env.GOOGLE_AI_API_KEY
     if (!apiKey) {
       return {
         statusCode: 500,
-        body: 'Google AI API key not configured'
-      };
+        body: JSON.stringify({ error: 'API key not configured' })
+      }
     }
 
-    // ✅ Call Google Image (Imagen / Nano Banana 2)
     const response = await fetch(
-      `https://generativeai.googleapis.com/v1beta/images:generate?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'imagen-3',   // ✅ Ajustable si Google usa otro alias
-          prompt: prompt,
-          image: {
-            content: imageBase64
-          },
-          size: '1024x1024'
+          contents: [
+            {
+              parts: [
+                { text: prompt },
+                {
+                  inlineData: {
+                    mimeType: 'image/png',
+                    data: imageBase64
+                  }
+                }
+              ]
+            }
+          ]
         })
       }
-    );
+    )
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error('Google Image error:', errText);
+    const data = await response.json()
+
+    const imagePart =
+      data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)
+
+    if (!imagePart) {
       return {
         statusCode: 500,
-        body: errText
-      };
+        body: JSON.stringify({ error: 'No image generated' })
+      }
     }
 
-    const data = await response.json();
+    const imageUrl = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`
 
-    // ✅ Normalize response for frontend
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        image_url: data.images[0].url
-      })
-    };
+      body: JSON.stringify({ image_url: imageUrl })
+    }
 
   } catch (err) {
-    console.error('Generate image error:', err);
+    console.error(err)
     return {
       statusCode: 500,
-      body: 'Image generation failed'
-    };
+      body: JSON.stringify({ error: 'Image generation failed' })
+    }
   }
-};
+}

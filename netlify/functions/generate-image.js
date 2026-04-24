@@ -10,32 +10,31 @@ export async function handler(event) {
     }
 
     const apiKey = process.env.HIGGSFIELD_API_KEY
-    if (!apiKey) {
+    const apiSecret = process.env.HIGGSFIELD_API_SECRET
+
+    if (!apiKey || !apiSecret) {
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'HIGGSFIELD_API_KEY not configured' })
+        body: JSON.stringify({ error: 'Higgsfield API keys not configured' })
       }
     }
 
-    // 1️⃣ Call Higgsfield Image Generation
-    const response = await fetch(
-      'https://api.higgsfield.ai/v1/image/generate', // ⚠️ usa el endpoint real de Higgsfield
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          reference_image: imageBase64 || null,
-          width: 1024,
-          height: 1024,
-          steps: 30,
-          guidance: 7.5
-        })
-      }
-    )
+    // 🔹 Llamada a Higgsfield (IMAGEN REAL)
+    const response = await fetch('https://api.higgsfield.ai/v1/image/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'X-API-SECRET': apiSecret
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        reference_image: imageBase64 || null,
+        width: 1024,
+        height: 1024,
+        steps: 30
+      })
+    })
 
     const data = await response.json()
 
@@ -43,11 +42,11 @@ export async function handler(event) {
       console.error('Higgsfield error:', data)
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'Higgsfield image generation failed' })
+        body: JSON.stringify({ error: 'Error generating image with Higgsfield' })
       }
     }
 
-    // ✅ Higgsfield devuelve URL directa
+    // ✅ Higgsfield devuelve URL
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -56,7 +55,7 @@ export async function handler(event) {
     }
 
   } catch (err) {
-    console.error('Generate image error:', err)
+    console.error('Backend error:', err)
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Internal server error' })

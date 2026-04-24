@@ -1,44 +1,61 @@
 import { generateImage } from './api.js'
 
-/* ========= HELPERS ========= */
+/* =========================
+   HELPERS
+========================= */
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => {
-      resolve(reader.result.split(',')[1])
+      // ⚠️ Quitamos el prefijo data:image/...
+      const base64 = reader.result.split(',')[1]
+      resolve(base64)
     }
     reader.onerror = reject
     reader.readAsDataURL(file)
   })
 }
 
-/* ========= ELEMENTS ========= */
+/* =========================
+   ELEMENTS
+========================= */
 
 const fileInput = document.getElementById('referenceImage')
+const uploadBox = document.querySelector('.upload-box')
 const previewContainer = document.querySelector('.upload-preview')
-const previewImg = document.querySelector('.preview-image')
+const previewImg = document.querySelector('.upload-preview img')
+
 const promptInput = document.getElementById('imagePrompt')
-const generateBtn = document.getElementById('generateBtn')
-const outputImg = document.getElementById('outputImage')
-const placeholder = document.querySelector('.preview-placeholder')
 const promptChips = document.querySelectorAll('.prompt-chip')
+
+const generateBtn = document.getElementById('generateBtn')
+
+const outputImg = document.getElementById('outputImage')
+const previewPlaceholder = document.querySelector('.preview-placeholder')
 
 let currentImageBase64 = null
 
-/* ========= IMAGE PREVIEW ✅ ========= */
+/* =========================
+   IMAGE UPLOAD + PREVIEW ✅
+========================= */
 
 fileInput.addEventListener('change', async () => {
   const file = fileInput.files[0]
   if (!file) return
 
+  // ✅ Mostrar preview visual
   previewImg.src = URL.createObjectURL(file)
   previewContainer.style.display = 'block'
+  uploadBox.classList.add('has-image')
 
+  // ✅ Convertir a base64 para backend
   currentImageBase64 = await fileToBase64(file)
 })
 
-/* ========= PROMPT CHIPS ✅ ========= */
+/* =========================
+   PROMPT CHIPS ✅
+========================= */
 
 promptChips.forEach(chip => {
   chip.addEventListener('click', () => {
@@ -47,35 +64,39 @@ promptChips.forEach(chip => {
   })
 })
 
-/* ========= GENERATE IMAGE ✅ ========= */
+/* =========================
+   GENERATE IMAGE ✅
+========================= */
 
 generateBtn.addEventListener('click', async () => {
   try {
     if (!currentImageBase64) {
-      alert('Please upload a reference image.')
+      alert('Please upload a reference image first.')
       return
     }
 
-    if (!promptInput.value.trim()) {
-      alert('Please write or select a prompt.')
+    const prompt = promptInput.value.trim()
+    if (!prompt) {
+      alert('Please write or select an image prompt.')
       return
     }
 
+    // UI state
     generateBtn.disabled = true
+    const originalText = generateBtn.textContent
     generateBtn.textContent = 'Generating...'
 
-    const data = await generateImage(
-      promptInput.value.trim(),
-      currentImageBase64
-    )
+    // 🔥 Call backend (Higgsfield)
+    const data = await generateImage(prompt, currentImageBase64)
 
+    // ✅ Mostrar imagen generada
     outputImg.src = data.image_url
     outputImg.style.display = 'block'
-    placeholder.style.display = 'none'
+    previewPlaceholder.style.display = 'none'
 
   } catch (err) {
+    console.error('Frontend error:', err)
     alert('Error generating image')
-    console.error(err)
   } finally {
     generateBtn.disabled = false
     generateBtn.textContent = 'Generate Image'
